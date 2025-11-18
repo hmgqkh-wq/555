@@ -1,0 +1,4 @@
+{
+  "profile": "xclipse-940-collector",
+  "notes": "Collector mode - gather symbols and runtime hints for later final wrapper design"
+}
