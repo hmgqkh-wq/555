@@ -1,0 +1,14 @@
+{
+  "name": "xclipse-940-collector",
+  "driver": "libvulkan.so",
+  "entrypoint": "vkGetInstanceProcAddr",
+  "target": "vulkan1.0",
+  "features": {
+    "hud_overlay": false,
+    "auto_tuning": false
+  },
+  "layers": {
+    "icd": "usr/share/vulkan/icd.d/xeno_wrapper.json"
+  },
+  "notes": "Lightweight log collector wrapper for Eden. Produces logs to /storage/emulated/0/eden_wrapper_logs/"
+}
