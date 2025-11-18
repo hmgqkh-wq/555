@@ -1,0 +1,5 @@
+{
+  "log_symbols": true,
+  "trace_calls": false,
+  "dump_shaders": false
+}
