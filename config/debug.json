@@ -1,0 +1,5 @@
+{
+  "writer": "eden_collector",
+  "level": "info",
+  "log_path": "/storage/emulated/0/eden_wrapper_logs/vulkan_calls.txt"
+}
