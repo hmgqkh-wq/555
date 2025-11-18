@@ -1,0 +1,71 @@
+name: Build Eden wrapper (arm64)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (Android NDK arm64)
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install NDK (r25b)
+      uses: android-actions/setup-ndk@v2
+      with:
+        ndk: '25.2.9519653'
+
+    - name: Setup CMake
+      uses: lukka/get-cmake@v3
+      with:
+        cmake-version: '3.22.1'
+
+    - name: Configure (CMake)
+      run: |
+        mkdir -p build
+        cd build
+        cmake -DCMAKE_TOOLCHAIN_FILE=$NDK_HOME/build/cmake/android.toolchain.cmake \
+              -DANDROID_ABI=arm64-v8a \
+              -DANDROID_PLATFORM=android-24 \
+              -DCMAKE_BUILD_TYPE=Release \
+              ..
+
+    - name: Build
+      run: |
+        cd build
+        cmake --build . --config Release -- -j$(nproc)
+
+    - name: Collect lib and config into eden ZIP
+      run: |
+        cd build
+        PKG="your_wrapper"
+        rm -f ${PKG}.zip
+        # The compiled library will be build/libvulkan.so
+        # If cmake installed it as libvulkan.so in build/, use it. Otherwise look in build/src
+        if [ -f libvulkan.so ]; then
+          cp libvulkan.so ../libvulkan.so
+        elif [ -f src/libvulkan.so ]; then
+          cp src/libvulkan.so ../libvulkan.so
+        else
+          # try find
+          find . -name "libvulkan.so" -exec cp {} ../libvulkan.so \;
+        fi
+        # Prepare package root
+        cd ..
+        rm -rf eden_pkg
+        mkdir eden_pkg
+        cp manifest.json eden_pkg/manifest.json
+        cp libvulkan.so eden_pkg/libvulkan.so
+        cp -r config eden_pkg/config
+        cd eden_pkg
+        zip -r ../${PKG}.zip .
+        ls -la ../${PKG}.zip
+
+    - name: Upload wrapper ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: your_wrapper
+        path: build/../your_wrapper.zip
